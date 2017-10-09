@@ -29,6 +29,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import me.localeconnect.controller.HelloWorldConfiguration;
+
 import static org.assertj.core.api.BDDAssertions.then;
 
 /**
