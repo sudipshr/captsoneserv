@@ -53,7 +53,7 @@ public class UserService {
 		}
 
 		
-		return partitionKey;
+		return null;
 
 	}
 
