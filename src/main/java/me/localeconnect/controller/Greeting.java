@@ -1,4 +1,4 @@
-package hello;
+package me.localeconnect.controller;
 
 public class Greeting {
 
