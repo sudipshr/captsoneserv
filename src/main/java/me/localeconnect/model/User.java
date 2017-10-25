@@ -94,7 +94,7 @@ public class User {
 	/**
 	 * @return the userName
 	 */
-	@DynamoDBIndexHashKey(globalSecondaryIndexNames={ "emailId"})
+	@DynamoDBIndexHashKey(globalSecondaryIndexNames={ "userName"})
 	@DynamoDBAttribute
 	public String getUserName() {
 		return userName;
@@ -108,7 +108,7 @@ public class User {
 	/**
 	 * @return the password
 	 */
-	@DynamoDBAttribute
+	@DynamoDBAttribute(attributeName="Password")
 	public String getPassword() {
 		return password;
 	}

@@ -1,5 +1,10 @@
 package me.localeconnect.controller;
 
+import java.util.Date;
+
+import org.apache.http.HttpStatus;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -12,6 +17,7 @@ import me.localeconnect.model.User;
 @RequestMapping("/userserv")
 public class UserServiceController {
 	
+	@Autowired
 	UserService userService;
 
 	@RequestMapping(method = RequestMethod.POST, path = "/register")
@@ -21,6 +27,7 @@ public class UserServiceController {
 		User user = new User();
 		user.setUserName(userName);
 		user.setPassword(password);
+		user.setJoinDate(new Date());
 
 		userService.createUser(user);
 
@@ -28,14 +35,20 @@ public class UserServiceController {
 	}
 
 	@RequestMapping(method = RequestMethod.POST, path = "/auth")
-	public @ResponseBody User autheticateUser(@RequestParam(value = "userName", required = true) String userName,
+	public @ResponseBody ResponseEntity<User> autheticateUser(@RequestParam(value = "userName", required = true) String userName,
 			@RequestParam(value = "password", required = true) String password) {
 
 		User user = null;
 
 		try {
 
-			user = userService.getUserName(userName);
+			user = userService.getUserByUserName(userName);
+			
+			if (user != null && password.equals(user.getPassword())){
+				
+				return new ResponseEntity<>(user, org.springframework.http.HttpStatus.OK);
+				
+			}
 			
 			
 
@@ -43,8 +56,8 @@ public class UserServiceController {
 			System.err.println("GetItem failed.");
 			System.err.println(e.getMessage());
 		}
-
-		return user;
+		
+		return new ResponseEntity<>(null, org.springframework.http.HttpStatus.UNAUTHORIZED);
 	}
 
 

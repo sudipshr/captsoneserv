@@ -9,6 +9,7 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.springframework.http.ResponseEntity;
 
 import me.localeconnect.model.User;
 
@@ -38,21 +39,24 @@ public class UserServiceTest {
 		User user = new User();
 		user.setDeviceId("1234");
 		user.setEmail("a@a.com");
-		user.setUserName("a@a.com");
+		user.setUserName("sudip");
+		user.setPassword("sudip");
 		user.setJoinDate(new Date(System.currentTimeMillis()));
 		
 		service.createUser(user);
 		user = new User();
 		user.setDeviceId("12dddd34");
 		user.setEmail("a@ddddddddddddda.com");
-		user.setUserName("ccccccccccccc");
+		user.setUserName("shrestha");
+		user.setPassword("sudip");
 		user.setJoinDate(new Date(System.currentTimeMillis()));
 		service.createUser(user);
 		
 		user = new User();
 		user.setDeviceId("12dddd34");
 		user.setEmail("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx@a.com");
-		user.setUserName("sdfsdfsf");
+		user.setUserName("saisha");
+		user.setPassword("sudip");
 		user.setJoinDate(new Date(System.currentTimeMillis()));
 		service.createUser(user);
 		
@@ -74,8 +78,19 @@ public class UserServiceTest {
 	}
 
 	@Test
-	public void testGetUserEmail() {
-		System.out.println(service.getUserName("a@a.com"));
+	public void testGetUserByUserName() {
+		try {
+
+			User user = service.getUserByUserName("sudip");
+			
+			System.out.println(user);
+			
+			
+
+		} catch (Exception e) {
+			System.err.println("GetItem failed.");
+			System.err.println(e.getMessage());
+		}
 	}
 
 }
