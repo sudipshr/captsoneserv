@@ -28,8 +28,11 @@ public class UserServiceController {
 		user.setUserName(userName);
 		user.setPassword(password);
 		user.setJoinDate(new Date());
-
-		userService.createUser(user);
+		
+		User dbUser = userService.getUserByUserName(userName);
+		
+		if (dbUser == null)
+			userService.createUser(user);
 
 		return user;
 	}
