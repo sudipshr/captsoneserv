@@ -18,7 +18,7 @@ import me.localeconnect.model.User;
 public class UserServiceController {
 	
 	@Autowired
-	UserService userService;
+	DataService userService;
 
 	@RequestMapping(method = RequestMethod.POST, path = "/register")
 	public @ResponseBody User register(@RequestParam(value = "userName", required = true) String userName,
@@ -29,10 +29,10 @@ public class UserServiceController {
 		user.setPassword(password);
 		user.setJoinDate(new Date());
 		
-		User dbUser = userService.getUserByUserName(userName);
+		User dbUser = userService.getUserByUserName(userName, null);
 		
 		if (dbUser == null)
-			userService.createUser(user);
+			userService.save(user);
 
 		return user;
 	}
@@ -45,7 +45,7 @@ public class UserServiceController {
 
 		try {
 
-			user = userService.getUserByUserName(userName);
+			user = userService.getUserByUserName(userName, password);
 			
 			if (user != null && password.equals(user.getPassword())){
 				

@@ -108,7 +108,7 @@ public class User {
 	/**
 	 * @return the password
 	 */
-	@DynamoDBAttribute(attributeName="Password")
+	@DynamoDBAttribute()
 	public String getPassword() {
 		return password;
 	}

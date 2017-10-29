@@ -2,6 +2,7 @@ package me.localeconnect.controller;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
@@ -13,6 +14,7 @@ import com.amazonaws.services.dynamodbv2.document.TableCollection;
 import com.amazonaws.services.dynamodbv2.model.AttributeDefinition;
 import com.amazonaws.services.dynamodbv2.model.CreateTableRequest;
 import com.amazonaws.services.dynamodbv2.model.DeleteTableRequest;
+import com.amazonaws.services.dynamodbv2.model.GlobalSecondaryIndex;
 import com.amazonaws.services.dynamodbv2.model.KeySchemaElement;
 import com.amazonaws.services.dynamodbv2.model.KeyType;
 import com.amazonaws.services.dynamodbv2.model.ListTablesResult;
@@ -27,10 +29,15 @@ public class DALUtil {
 	public static boolean createTable(Class<?> modelClassz) {
 		try {
 		DynamoDBMapper mapper = getDynamoDBMapper();
+		
 		CreateTableRequest tableRequest =     mapper.generateCreateTableRequest(modelClassz); // 1
 		tableRequest.setProvisionedThroughput(new ProvisionedThroughput(1000L, 1500L)); // 2
-		if (tableRequest.getGlobalSecondaryIndexes() != null){
-			tableRequest.getGlobalSecondaryIndexes().get(0).setProvisionedThroughput(new ProvisionedThroughput(10l, 10l));
+		List<GlobalSecondaryIndex> inxs = tableRequest.getGlobalSecondaryIndexes();
+		if (inxs != null){
+			for (GlobalSecondaryIndex idx: inxs){
+				idx.setProvisionedThroughput(new ProvisionedThroughput(10l, 10l));
+			}
+			
 		}
 		getClient().createTable(tableRequest); // 3
 
@@ -187,6 +194,9 @@ public class DALUtil {
 	
 	public static void main(String args[]){
 		createTable(User.class);
+		//createTable(Message.class);
+		//createTable(Event.class);
+		//createTable(Preference.class);
 		
 		//deleteModelTable(User.class);
 	}

@@ -1,22 +1,22 @@
 package me.localeconnect.controller;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.fail;
 
-import java.sql.Date;
+import java.util.Date;
 
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.springframework.http.ResponseEntity;
 
+import me.localeconnect.model.Event;
 import me.localeconnect.model.User;
 
-public class UserServiceTest {
+public class DataServiceTest {
 	
 	
-	UserService service = new UserService();
+	DataService service = new DataService();
 
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
@@ -43,14 +43,14 @@ public class UserServiceTest {
 		user.setPassword("sudip");
 		user.setJoinDate(new Date(System.currentTimeMillis()));
 		
-		service.createUser(user);
+		service.save(user);
 		user = new User();
 		user.setDeviceId("12dddd34");
 		user.setEmail("a@ddddddddddddda.com");
 		user.setUserName("shrestha");
 		user.setPassword("sudip");
 		user.setJoinDate(new Date(System.currentTimeMillis()));
-		service.createUser(user);
+		service.save(user);
 		
 		user = new User();
 		user.setDeviceId("12dddd34");
@@ -58,7 +58,7 @@ public class UserServiceTest {
 		user.setUserName("saisha");
 		user.setPassword("sudip");
 		user.setJoinDate(new Date(System.currentTimeMillis()));
-		service.createUser(user);
+		service.save(user);
 		
 	}
 
@@ -84,13 +84,61 @@ public class UserServiceTest {
 			User user = service.getUserByUserName("sudip");
 			
 			System.out.println(user);
+			Thread.sleep(5000);
+			user = service.getUserByUserName("sudip", "sudip");
 			
+			System.out.println(user);
 			
 
 		} catch (Exception e) {
 			System.err.println("GetItem failed.");
 			System.err.println(e.getMessage());
 		}
+	}
+	
+	@Test
+	public void testDelete(){
+		
+		Event event = new Event();
+		event.setEventTime(new Date());
+		
+		service.save(event);
+		
+		String id = event.getId();
+		
+		System.out.println("IDDDDD: "+id);
+		
+		Event ev = new Event();
+		ev.setId(id);
+		ev.setEventTime(event.getEventTime());
+		
+		service.delete(ev);
+		
+		
+		
+	}
+	
+	@Test
+	public void testSave(){
+		
+		Event event = new Event();
+		event.setEventTime(new Date());
+		
+		service.save(event);
+		
+		String id = event.getId();
+		
+		System.out.println("IDDDDD: "+id);
+		
+		Event ev = new Event();
+		ev.setId(id);
+		ev.setEventTime(event.getEventTime());
+		
+		service.save(event);
+		System.out.println("IDDDDD: "+id);
+		
+		
+		
 	}
 
 }

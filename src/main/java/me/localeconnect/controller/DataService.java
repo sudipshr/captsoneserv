@@ -16,19 +16,19 @@ import com.amazonaws.services.dynamodbv2.model.Condition;
 import me.localeconnect.model.User;
 
 @Service
-public class UserService {
+public class DataService {
 
 	DynamoDBMapper mapper = DALUtil.getDynamoDBMapper();
 
-	public void createUser(Object model) {
+	public void save(Object model) {
 
 		mapper.save(model);
 
 	}
 	
-	public void deleteUser(Object model) {
+	public void delete(Object model) {
 
-		mapper.save(model);
+		mapper.delete(model);
 
 	}
 
@@ -44,7 +44,11 @@ public class UserService {
 
 	}
 	
-	public User getUserByUserName(String userName) {
+	public User getUserByUserName(String userName){
+		return getUserByUserName(userName, null);
+	}
+	
+	public User getUserByUserName(String userName, String password) {
 		
 		DynamoDBScanExpression scanExpression = new DynamoDBScanExpression();
 
@@ -54,6 +58,12 @@ public class UserService {
 		.withAttributeValueList(new AttributeValue().withS(userName));
 
 		scanFilter.put("userName", scanCondition);
+		
+		scanCondition = new Condition()
+				.withComparisonOperator(ComparisonOperator.EQ.toString())
+				.withAttributeValueList(new AttributeValue().withS(password));
+		if (password != null)
+			scanFilter.put("password", scanCondition);
 
 		scanExpression.setScanFilter(scanFilter);
 
