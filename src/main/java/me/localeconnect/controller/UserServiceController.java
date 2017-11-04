@@ -6,6 +6,7 @@ import org.apache.http.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -19,9 +20,54 @@ public class UserServiceController {
 	
 	@Autowired
 	DataService userService;
-
+	
 	@RequestMapping(method = RequestMethod.POST, path = "/register")
-	public @ResponseBody User register(@RequestParam(value = "userName", required = true) String userName,
+	public @ResponseBody User registerBackup(@RequestBody User user) {
+
+		System.out.println(user);
+		user.setJoinDate(new Date());
+		
+		User dbUser = userService.getUserByUserName(user.getUserName(), null);
+		
+		if (dbUser == null)
+			userService.save(user);
+		
+		System.out.println(user);
+
+		return user;
+	}
+
+	@RequestMapping(method = RequestMethod.POST, path = "/auth")
+	public @ResponseBody ResponseEntity<User> auth(@RequestBody User user) {
+
+		try {
+
+			System.out.println(user);
+			
+			String password = user.getPassword()+"";
+			
+			user = userService.getUserByUserName(user.getUserName(), null);
+			
+			if (user != null && password.equals(user.getPassword())){
+				
+				System.out.println(user);
+				
+				return new ResponseEntity<>(user, org.springframework.http.HttpStatus.OK);
+				
+			}
+			
+			
+
+		} catch (Exception e) {
+			System.err.println("GetItem failed.");
+			System.err.println(e.getMessage());
+		}
+		
+		return new ResponseEntity<>(null, org.springframework.http.HttpStatus.UNAUTHORIZED);
+	}
+
+	@RequestMapping(method = RequestMethod.POST, path = "/registerbackup")
+	public @ResponseBody User registerBackup(@RequestParam(value = "userName", required = true) String userName,
 			@RequestParam(value = "password", required = true) String password) {
 
 		User user = new User();
@@ -37,8 +83,8 @@ public class UserServiceController {
 		return user;
 	}
 
-	@RequestMapping(method = RequestMethod.POST, path = "/auth")
-	public @ResponseBody ResponseEntity<User> autheticateUser(@RequestParam(value = "userName", required = true) String userName,
+	@RequestMapping(method = RequestMethod.POST, path = "/authbackup")
+	public @ResponseBody ResponseEntity<User> autheticateUserBackup(@RequestParam(value = "userName", required = true) String userName,
 			@RequestParam(value = "password", required = true) String password) {
 
 		User user = null;

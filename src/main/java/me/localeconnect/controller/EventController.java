@@ -20,7 +20,7 @@ public class EventController {
 	private DataService service;
 	
 	
-	@RequestMapping(value = "/", method = RequestMethod.POST)
+	@RequestMapping(value = "", method = RequestMethod.POST)
 	public ResponseEntity<Event> createEvent(@RequestBody Event event) {
 		
 		//event.setId("RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR");
@@ -30,7 +30,7 @@ public class EventController {
 	    
 	}
 	
-	@RequestMapping(value = "/", method = RequestMethod.DELETE)
+	@RequestMapping(value = "", method = RequestMethod.DELETE)
 	public ResponseEntity<Event> deleteEvent(@RequestBody Event event) {
 		
 		//event.setId("RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR");
@@ -40,7 +40,7 @@ public class EventController {
 	    
 	}
 	
-	@RequestMapping(value = "/", method = RequestMethod.PUT)
+	@RequestMapping(value = "", method = RequestMethod.PUT)
 	public ResponseEntity<Event> updateEvent(@RequestBody Event event) {
 		
 		
