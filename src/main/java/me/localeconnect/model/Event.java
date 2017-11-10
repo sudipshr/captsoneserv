@@ -16,8 +16,8 @@ public class Event {
 	private String city;
 	private String zip;
 	private String country;
-	private long longtude;
-	private long lattiude;
+	private double longitude;
+	private double latitude;
 	private Date eventTime;
 	private Date eventCheckInTime;
 	private Date eventCheckoutTime;
@@ -96,27 +96,27 @@ public class Event {
 	 * @return the longtude
 	 */
 	@DynamoDBAttribute
-	public long getLongtude() {
-		return longtude;
+	public double getLongitude() {
+		return longitude;
 	}
 	/**
-	 * @param longtude the longtude to set
+	 * @param longtude the longitude to set
 	 */
-	public void setLongtude(long longtude) {
-		this.longtude = longtude;
+	public void setLongitude(double longitude) {
+		this.longitude = longitude;
 	}
 	/**
-	 * @return the lattiude
+	 * @return the latitude
 	 */
 	@DynamoDBAttribute
-	public long getLattiude() {
-		return lattiude;
+	public double getLatitude() {
+		return latitude;
 	}
 	/**
-	 * @param lattiude the lattiude to set
+	 * @param lattiude the latitude to set
 	 */
-	public void setLattiude(long lattiude) {
-		this.lattiude = lattiude;
+	public void setLatitude(double latitude) {
+		this.latitude = latitude;
 	}
 	/**
 	 * @return the eventTime
@@ -220,8 +220,8 @@ public class Event {
 		result = prime * result + ((eventTime == null) ? 0 : eventTime.hashCode());
 		result = prime * result + ((id == null) ? 0 : id.hashCode());
 		result = prime * result + ((initiatingUserId == null) ? 0 : initiatingUserId.hashCode());
-		result = prime * result + (int) (lattiude ^ (lattiude >>> 32));
-		result = prime * result + (int) (longtude ^ (longtude >>> 32));
+		result = prime * result + (int) (latitude);
+		result = prime * result + (int) (longitude);
 		result = prime * result + (verReqIndicator ? 1231 : 1237);
 		result = prime * result + ((zip == null) ? 0 : zip.hashCode());
 		return result;
@@ -283,9 +283,9 @@ public class Event {
 				return false;
 		} else if (!initiatingUserId.equals(other.initiatingUserId))
 			return false;
-		if (lattiude != other.lattiude)
+		if (latitude != other.latitude)
 			return false;
-		if (longtude != other.longtude)
+		if (longitude != other.longitude)
 			return false;
 		if (verReqIndicator != other.verReqIndicator)
 			return false;
@@ -302,18 +302,11 @@ public class Event {
 	@Override
 	public String toString() {
 		return "Event [id=" + id + ", address=" + address + ", city=" + city + ", zip=" + zip + ", country=" + country
-				+ ", longtude=" + longtude + ", lattiude=" + lattiude + ", eventTime=" + eventTime
+				+ ", longitude=" + longitude + ", latitude=" + latitude + ", eventTime=" + eventTime
 				+ ", eventCheckInTime=" + eventCheckInTime + ", eventCheckoutTime=" + eventCheckoutTime
 				+ ", verReqIndicator=" + verReqIndicator + ", initiatingUserId=" + initiatingUserId
 				+ ", acceptingUserId=" + acceptingUserId + "]";
 	}
-	
-	
-	
-	
-	
-	
-	
 	
 
 }

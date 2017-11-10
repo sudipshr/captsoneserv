@@ -26,7 +26,7 @@ public class User {
 	/**
 	 * @return the joinDate
 	 */
-	@DynamoDBRangeKey
+	@DynamoDBAttribute
 	public Date getJoinDate() {
 		return joinDate;
 	}

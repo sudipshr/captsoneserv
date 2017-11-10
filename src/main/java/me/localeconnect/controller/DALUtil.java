@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import com.amazonaws.client.builder.AwsClientBuilder;
+import com.amazonaws.regions.Regions;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
@@ -25,61 +26,70 @@ import me.localeconnect.model.User;
 
 public class DALUtil {
 	
-	
+	static boolean isLocal = System.getProperty("islocal", "n").equals("y") ? true:false;
+
 	public static boolean createTable(Class<?> modelClassz) {
 		try {
-		DynamoDBMapper mapper = getDynamoDBMapper();
-		
-		CreateTableRequest tableRequest =     mapper.generateCreateTableRequest(modelClassz); // 1
-		tableRequest.setProvisionedThroughput(new ProvisionedThroughput(1000L, 1500L)); // 2
-		List<GlobalSecondaryIndex> inxs = tableRequest.getGlobalSecondaryIndexes();
-		if (inxs != null){
-			for (GlobalSecondaryIndex idx: inxs){
-				idx.setProvisionedThroughput(new ProvisionedThroughput(10l, 10l));
+
+			deleteModelTable(modelClassz);
+			DynamoDBMapper mapper = getDynamoDBMapper();
+
+			CreateTableRequest tableRequest = mapper.generateCreateTableRequest(modelClassz); // 1
+			tableRequest.setProvisionedThroughput(new ProvisionedThroughput(100L, 150L)); // 2
+			List<GlobalSecondaryIndex> inxs = tableRequest.getGlobalSecondaryIndexes();
+			if (inxs != null) {
+				for (GlobalSecondaryIndex idx : inxs) {
+					idx.setProvisionedThroughput(new ProvisionedThroughput(10l, 10l));
+				}
+
 			}
-			
-		}
-		getClient().createTable(tableRequest); // 3
+			getClient().createTable(tableRequest); // 3
 
-		    } catch (Error e) {
-		        e.printStackTrace();
-		        return false;
+		} catch (Error e) {
+			e.printStackTrace();
+			return false;
 
-		    } catch (Exception e) {
-		        e.printStackTrace();
-		        return false;
-		    }
-		    return true;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
 		}
-	
-	
+		return true;
+	}
+
 	public static DynamoDB getDynamoDB() {
 
-		AmazonDynamoDB client = AmazonDynamoDBClientBuilder.standard().withEndpointConfiguration(
-				new AwsClientBuilder.EndpointConfiguration("http://localhost:8000", "us-west-2")).build();
-
-		DynamoDB dynamoDB = new DynamoDB(client);
+		
+		DynamoDB dynamoDB = new DynamoDB(getClient());
 
 		return dynamoDB;
 
 	}
 
 	public static AmazonDynamoDB getClient() {
-		return AmazonDynamoDBClientBuilder.standard().withEndpointConfiguration(
-				new AwsClientBuilder.EndpointConfiguration("http://localhost:8000", "us-west-2")).build();
+		
+		AmazonDynamoDB client = null;
+		
+		if(isLocal)
+			client = AmazonDynamoDBClientBuilder.standard().withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration("http://localhost:8000", "us-west-2")).build();
+		else	
+			client = AmazonDynamoDBClientBuilder.standard().withRegion(Regions.US_WEST_2).build(); 
+		
+		//AmazonDynamoDBClientBuilder.standard().withEndpointConfiguration(
+		//new AwsClientBuilder.EndpointConfiguration("http://localhost:8000", "us-west-2")).build();
+		
+		return client;
 	}
 
 	public static DynamoDBMapper getDynamoDBMapper() {
 
-		AmazonDynamoDB client = getClient();
 
-		DynamoDBMapper dynamoDB = new DynamoDBMapper(client);
+
+		DynamoDBMapper dynamoDB = new DynamoDBMapper(getClient());
 
 		return dynamoDB;
 
 	}
-	
-	
+
 	public static void createTableHelper(String tableName, long readCapacityUnits, long writeCapacityUnits,
 			String partitionKeyName, String partitionKeyType, String sortKeyName, String sortKeyType) {
 
@@ -116,89 +126,88 @@ public class DALUtil {
 			System.err.println(e.getMessage());
 		}
 	}
-	
+
 	public static void listMyTables() {
 
-        TableCollection<ListTablesResult> tables = getDynamoDB().listTables();
-        Iterator<Table> iterator = tables.iterator();
+		TableCollection<ListTablesResult> tables = getDynamoDB().listTables();
+		Iterator<Table> iterator = tables.iterator();
 
-        System.out.println("Listing table names");
+		System.out.println("Listing table names");
 
-        while (iterator.hasNext()) {
-            Table table = iterator.next();
-            System.out.println(table.getTableName());
-        }
-    }
+		while (iterator.hasNext()) {
+			Table table = iterator.next();
+			System.out.println(table.getTableName());
+		}
+	}
 
-    public static void getTableInformation(String tableName) {
+	public static void getTableInformation(String tableName) {
 
-        System.out.println("Describing " + tableName);
+		System.out.println("Describing " + tableName);
 
-        TableDescription tableDescription = getDynamoDB().getTable(tableName).describe();
-        System.out.format(
-            "Name: %s:\n" + "Status: %s \n" + "Provisioned Throughput (read capacity units/sec): %d \n"
-                + "Provisioned Throughput (write capacity units/sec): %d \n",
-            tableDescription.getTableName(), tableDescription.getTableStatus(),
-            tableDescription.getProvisionedThroughput().getReadCapacityUnits(),
-            tableDescription.getProvisionedThroughput().getWriteCapacityUnits());
-    }
+		TableDescription tableDescription = getDynamoDB().getTable(tableName).describe();
+		System.out.format(
+				"Name: %s:\n" + "Status: %s \n" + "Provisioned Throughput (read capacity units/sec): %d \n"
+						+ "Provisioned Throughput (write capacity units/sec): %d \n",
+				tableDescription.getTableName(), tableDescription.getTableStatus(),
+				tableDescription.getProvisionedThroughput().getReadCapacityUnits(),
+				tableDescription.getProvisionedThroughput().getWriteCapacityUnits());
+	}
 
-    public static void updateExampleTable(String tableName) {
+	public static void updateExampleTable(String tableName) {
 
-        Table table = getDynamoDB().getTable(tableName);
-        System.out.println("Modifying provisioned throughput for " + tableName);
+		Table table = getDynamoDB().getTable(tableName);
+		System.out.println("Modifying provisioned throughput for " + tableName);
 
-        try {
-            table.updateTable(new ProvisionedThroughput().withReadCapacityUnits(6L).withWriteCapacityUnits(7L));
+		try {
+			table.updateTable(new ProvisionedThroughput().withReadCapacityUnits(6L).withWriteCapacityUnits(7L));
 
-            table.waitForActive();
-        }
-        catch (Exception e) {
-            System.err.println("UpdateTable request failed for " + tableName);
-            System.err.println(e.getMessage());
-        }
-    }
+			table.waitForActive();
+		} catch (Exception e) {
+			System.err.println("UpdateTable request failed for " + tableName);
+			System.err.println(e.getMessage());
+		}
+	}
 
-    public static void deleteExampleTable(String tableName) {
+	public static void deleteExampleTable(String tableName) {
 
-        Table table = getDynamoDB().getTable(tableName);
-        try {
-            System.out.println("Issuing DeleteTable request for " + tableName);
-            table.delete();
+		Table table = getDynamoDB().getTable(tableName);
+		try {
+			System.out.println("Issuing DeleteTable request for " + tableName);
+			table.delete();
 
-            System.out.println("Waiting for " + tableName + " to be deleted...this may take a while...");
+			System.out.println("Waiting for " + tableName + " to be deleted...this may take a while...");
 
-            table.waitForDelete();
-        }
-        catch (Exception e) {
-            System.err.println("DeleteTable request failed for " + tableName);
-            System.err.println(e.getMessage());
-        }
-    }
-    
-    public static void deleteModelTable(Class<?> classz) {
+			table.waitForDelete();
+		} catch (Exception e) {
+			System.err.println("DeleteTable request failed for " + tableName);
+			System.err.println(e.getMessage());
+		}
+	}
 
-        DeleteTableRequest req = getDynamoDBMapper().generateDeleteTableRequest(classz);
-        try {
-        	String tableName = req.getTableName();
-            System.out.println("Issuing DeleteTable request for " + tableName);
-            deleteExampleTable(tableName);
-            
-            
-        }
-        catch (Exception e) {
+	public static void deleteModelTable(Class<?> classz) {
 
-            System.err.println(e.getMessage());
-        }
-    }
-	
-	public static void main(String args[]){
-		createTable(User.class);
-		//createTable(Message.class);
-		//createTable(Event.class);
-		//createTable(Preference.class);
+		DeleteTableRequest req = getDynamoDBMapper().generateDeleteTableRequest(classz);
+		try {
+			String tableName = req.getTableName();
+			System.out.println("Issuing DeleteTable request for " + tableName);
+			deleteExampleTable(tableName);
+
+		} catch (Exception e) {
+
+			System.err.println(e.getMessage());
+		}
+	}
+
+	public static void main(String args[]) {
+/*		createTable(Event.class);
+		createTable(Event.class);
+		createTable(Message.class);
+		createTable(Event.class);
+		createTable(Preference.class);*/
 		
-		//deleteModelTable(User.class);
+		createTable(User.class);
+
+		// deleteModelTable(User.class);
 	}
 
 }
