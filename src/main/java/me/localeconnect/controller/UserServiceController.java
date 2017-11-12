@@ -3,6 +3,8 @@ package me.localeconnect.controller;
 import java.util.Date;
 
 import org.apache.http.HttpStatus;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -18,13 +20,15 @@ import me.localeconnect.model.User;
 @RequestMapping("/userserv")
 public class UserServiceController {
 	
+	private static final Logger logger = LoggerFactory.getLogger(UserServiceController.class);
+	
 	@Autowired
 	DataService userService;
 	
 	@RequestMapping(method = RequestMethod.POST, path = "/register")
 	public @ResponseBody User registerBackup(@RequestBody User user) {
 
-		System.out.println(user);
+		logger.info(user.toString());
 		user.setJoinDate(new Date());
 		
 		User dbUser = userService.getUserByUserName(user.getUserName(), null);
@@ -32,7 +36,7 @@ public class UserServiceController {
 		if (dbUser == null)
 			userService.save(user);
 		
-		System.out.println(user);
+		logger.info(user.toString());
 
 		return user;
 	}
@@ -41,8 +45,10 @@ public class UserServiceController {
 	public @ResponseBody ResponseEntity<User> auth(@RequestBody User user) {
 
 		try {
+			
+			
 
-			System.out.println(user);
+			logger.info(user.toString());
 			
 			String password = user.getPassword()+"";
 			
@@ -50,7 +56,7 @@ public class UserServiceController {
 			
 			if (user != null && password.equals(user.getPassword())){
 				
-				System.out.println(user);
+				logger.info(user.toString());
 				
 				return new ResponseEntity<>(user, org.springframework.http.HttpStatus.OK);
 				

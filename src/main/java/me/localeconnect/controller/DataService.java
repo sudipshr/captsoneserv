@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
@@ -18,6 +20,8 @@ import me.localeconnect.model.User;
 
 @Service
 public class DataService {
+	
+	private static final Logger logger = LoggerFactory.getLogger(EventController.class);
 
 	DynamoDBMapper mapper = DALUtil.getDynamoDBMapper();
 
@@ -114,7 +118,8 @@ public class DataService {
 			if(events.size() > 10) break;
 		}
 		
-		System.out.println(results.size()+"sdfssssssssssssssssssssssssssssssssssss");
+		logger.info("getEventByPreference: "+results.size());
+		
 
 		return events;
 	}

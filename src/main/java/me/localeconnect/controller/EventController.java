@@ -2,6 +2,8 @@ package me.localeconnect.controller;
 
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +21,8 @@ import me.localeconnect.model.Event;
 @RequestMapping("/eventserv")
 public class EventController {
 	
+	private static final Logger logger = LoggerFactory.getLogger(EventController.class);
+	
 	@Autowired
 	private DataService service;
 	
@@ -26,9 +30,10 @@ public class EventController {
 	@RequestMapping(value = "", method = RequestMethod.POST)
 	public ResponseEntity<Event> createEvent(@RequestBody Event event) {
 		
-		//event.setId("RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR");
+		logger.info(event.toString());
 		
 		service.save(event);
+		logger.info(event.toString());
 		return new ResponseEntity<Event>(event, HttpStatus.OK);
 	    
 	}
@@ -36,9 +41,10 @@ public class EventController {
 	@RequestMapping(value = "", method = RequestMethod.DELETE)
 	public ResponseEntity<Event> deleteEvent(@RequestBody Event event) {
 		
-		//event.setId("RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR");
+		logger.info(event.toString());
 		
 		service.delete(event);
+		logger.info("deleted");
 		return new ResponseEntity<Event>(event, HttpStatus.OK);
 	    
 	}
@@ -46,9 +52,9 @@ public class EventController {
 	@RequestMapping(value = "", method = RequestMethod.PUT)
 	public ResponseEntity<Event> updateEvent(@RequestBody Event event) {
 		
-		
-		
+		logger.info(event.toString());
 		service.save(event);
+		logger.info(event.toString());
 		return new ResponseEntity<Event>(event, HttpStatus.OK);
 	    
 	}
@@ -56,8 +62,9 @@ public class EventController {
 	
 	@RequestMapping(value = "/event", method = RequestMethod.GET)
 	public ResponseEntity<Event> getEvent(@RequestBody Event event) {
-		
+		logger.info(event.toString());
 		service.getById(Event.class, event.getId());
+		logger.info(event.toString());
 		return new ResponseEntity<Event>(event, HttpStatus.OK);
 	    
 	}
@@ -72,8 +79,9 @@ public class EventController {
 	
 	@RequestMapping(value = "/events", method = RequestMethod.GET)
 	public ResponseEntity<List<Event>> getEvents(@RequestParam String userId) {
-		
+		logger.info("getEvents: "+userId);
 		List<Event> events = service.getEventByPreference("hangout");
+		logger.info("getEvents: "+events);
 		
 		return new ResponseEntity<List<Event>>(events, HttpStatus.OK);
 	    
