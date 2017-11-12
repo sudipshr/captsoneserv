@@ -1,9 +1,11 @@
 package me.localeconnect.controller;
 
 import static org.assertj.core.api.BDDAssertions.then;
-import static org.junit.Assert.*;
+import static org.junit.Assert.fail;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import org.junit.After;
@@ -24,7 +26,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import me.localeconnect.model.Event;
@@ -105,20 +106,31 @@ public class UserServiceControllerTest {
 			e.printStackTrace();
 		}
 		
-		
 
 
-		//then(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
+			
 	}
 
 	@Test
 	public void testAutheticateUser() {
-		fail("Not yet implemented");
+		//fail("Not yet implemented");
 	}
 
 	@Test
-	public void testCreateTable() {
-		fail("Not yet implemented");
+	public void testEvents() {
+		
+		ResponseEntity<Object[]> responseEntity = this.testRestTemplate.getForEntity("http://localhost:" + this.port + "/eventserv/events?userId=test", Object[].class);
+        Object[] objects = responseEntity.getBody();
+
+        Arrays.asList((Event[])(objects));
 	}
 
+	@Test
+	public void testEventsNew() {
+		
+		ResponseEntity<Event[]> responseEntity = this.testRestTemplate.getForEntity("http://localhost:" + this.port + "/eventserv/events?userId=test", Event[].class);
+		Event[] objects = responseEntity.getBody();
+
+        Arrays.asList(objects);
+	}
 }

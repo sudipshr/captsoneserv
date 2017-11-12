@@ -1,5 +1,6 @@
 package me.localeconnect.controller;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -12,6 +13,7 @@ import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.amazonaws.services.dynamodbv2.model.ComparisonOperator;
 import com.amazonaws.services.dynamodbv2.model.Condition;
 
+import me.localeconnect.model.Event;
 import me.localeconnect.model.User;
 
 @Service
@@ -90,46 +92,31 @@ public class DataService {
 
 	}
 	
-	
 
-	public User getEventByUserId(String userId) {
+	public List<Event> getEventByPreference(String preference) {
 
 		DynamoDBScanExpression scanExpression = new DynamoDBScanExpression();
 
 		Map<String, Condition> scanFilter = new HashMap<String, Condition>();
-		Condition scanCondition = new Condition().withComparisonOperator(ComparisonOperator.EQ.toString())
-				.withAttributeValueList(new AttributeValue().withS(userId));
+		Condition scanCondition = new Condition().withComparisonOperator(ComparisonOperator.CONTAINS.toString())
+				.withAttributeValueList(new AttributeValue().withS(preference));
 
-		scanFilter.put("userName", scanCondition);
+		scanFilter.put("prefId", scanCondition);
 
-		
 		scanExpression.setScanFilter(scanFilter);
 
-		List<User> results = mapper.scan(User.class, scanExpression);
-
-		results.size();
-		if (results != null && !results.isEmpty()) {
-			return results.get(0);
+		List<Event> results = mapper.scan(Event.class, scanExpression);
+		
+		List<Event> events = new ArrayList<>();
+		
+		for(Event event:results){
+			events.add(event);
+			if(events.size() > 10) break;
 		}
+		
+		System.out.println(results.size()+"sdfssssssssssssssssssssssssssssssssssss");
 
-		/*
-		 * User partitionKey = new User();
-		 * 
-		 * partitionKey.setUserName(userName); DynamoDBQueryExpression<User>
-		 * queryExpression = new DynamoDBQueryExpression<User>()
-		 * .withHashKeyValues(partitionKey);
-		 * queryExpression.setConsistentRead(false);
-		 * 
-		 * List<User> itemList = mapper.query(User.class, queryExpression);
-		 * 
-		 * for (int i = 0; i < itemList.size(); i++) {
-		 * System.out.println(itemList.get(i));
-		 * 
-		 * return itemList.get(i); }
-		 */
-
-		return null;
-
+		return events;
 	}
 
 }

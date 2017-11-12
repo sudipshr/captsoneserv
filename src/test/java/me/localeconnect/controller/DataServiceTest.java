@@ -119,10 +119,23 @@ public class DataServiceTest {
 	}
 	
 	@Test
-	public void testSave(){
+	public void testGetEvents(){
+		
+
+		
+		System.out.println(service.getEventByPreference("hangout"));
+		
+		
+		
+	}
+	
+	@Test
+	public void testEventSave(){
 		
 		Event event = new Event();
 		event.setEventTime(new Date());
+		event.setPrefId("dating hangout");
+		
 		
 		service.save(event);
 		
@@ -131,10 +144,18 @@ public class DataServiceTest {
 		System.out.println("IDDDDD: "+id);
 		
 		Event ev = new Event();
-		ev.setId(id);
+		ev.setId(null);
+		ev.setId(null);
+		ev.setPrefId("hangout tea coffee");
 		ev.setEventTime(event.getEventTime());
+		int i = 0;
+		while (true){
+			event.setId(null);
+			service.save(event);
+			i++;
+			if (i>20) break;
+		}
 		
-		service.save(event);
 		System.out.println("IDDDDD: "+id);
 		
 		
