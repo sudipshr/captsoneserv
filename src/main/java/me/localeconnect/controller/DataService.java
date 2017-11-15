@@ -16,6 +16,7 @@ import com.amazonaws.services.dynamodbv2.model.ComparisonOperator;
 import com.amazonaws.services.dynamodbv2.model.Condition;
 
 import me.localeconnect.model.Event;
+import me.localeconnect.model.Preference;
 import me.localeconnect.model.User;
 
 @Service
@@ -99,7 +100,7 @@ public class DataService {
 
 	public List<Event> getEventByPreference(String preference) {
 
-		DynamoDBScanExpression scanExpression = new DynamoDBScanExpression();
+/*		DynamoDBScanExpression scanExpression = new DynamoDBScanExpression();
 
 		Map<String, Condition> scanFilter = new HashMap<String, Condition>();
 		Condition scanCondition = new Condition().withComparisonOperator(ComparisonOperator.CONTAINS.toString())
@@ -118,10 +119,80 @@ public class DataService {
 			if(events.size() > 10) break;
 		}
 		
-		logger.info("getEventByPreference: "+results.size());
+		logger.info("getEventByPreference: "+results.size());*/
+		
+
+		return getEvents("prefId", preference, ComparisonOperator.CONTAINS);
+	}
+	
+	public List<Event> getEventByInitiatingUser(String userId) {
+
+		return getEvents("initiatingUserId", userId, ComparisonOperator.EQ);
+
+	}
+	
+	public List<Event> getEventByAcceptingUser(String userId) {
+
+		return getEvents("acceptingUserId", userId, ComparisonOperator.EQ);
+
+	}
+	
+	public List<Event> getEvents(String fieldName, String fieldValue, ComparisonOperator op ) {
+
+		logger.info("getEvents fieldName:"+fieldName+":");
+		logger.info("getEvents fieldValue:"+fieldValue+":");
+		logger.info("getEvents op:"+op);
+		
+		DynamoDBScanExpression scanExpression = new DynamoDBScanExpression();
+
+		Map<String, Condition> scanFilter = new HashMap<String, Condition>();
+		Condition scanCondition = new Condition().withComparisonOperator(op.toString())
+				.withAttributeValueList(new AttributeValue().withS(fieldValue));
+
+		scanFilter.put(fieldName, scanCondition);
+
+		scanExpression.setScanFilter(scanFilter);
+
+		List<Event> results = mapper.scan(Event.class, scanExpression);
+		
+		List<Event> events = new ArrayList<>();
+		
+		for(Event event:results){
+			events.add(event);
+			if(events.size() > 10) break;
+		}
+		
+		logger.info("getEvents: "+results.size());
 		
 
 		return events;
+	}
+	
+	public List<Preference> getPreferenceById(String userId) {
+
+		DynamoDBScanExpression scanExpression = new DynamoDBScanExpression();
+
+		Map<String, Condition> scanFilter = new HashMap<String, Condition>();
+		Condition scanCondition = new Condition().withComparisonOperator(ComparisonOperator.CONTAINS.toString())
+				.withAttributeValueList(new AttributeValue().withS(userId));
+
+		scanFilter.put("userId", scanCondition);
+
+		scanExpression.setScanFilter(scanFilter);
+
+		List<Preference> results = mapper.scan(Preference.class, scanExpression);
+		
+		List<Preference> preferences = new ArrayList<>();
+		
+		for(Preference pref:results){
+			preferences.add(pref);
+			
+		}
+		
+		logger.info("getPreferenceById: "+results.size());
+		
+
+		return preferences;
 	}
 
 }

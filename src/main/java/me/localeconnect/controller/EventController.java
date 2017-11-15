@@ -1,5 +1,6 @@
 package me.localeconnect.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import me.localeconnect.model.Event;
+import me.localeconnect.model.Preference;
 
 
 
@@ -69,22 +71,29 @@ public class EventController {
 	    
 	}
 	
-	@RequestMapping(value = "/eventss", method = RequestMethod.GET)
-	public ResponseEntity<Event> getEvents(@RequestBody Event event) {
-		
-		service.getById(Event.class, event.getId());
-		return new ResponseEntity<Event>(event, HttpStatus.OK);
-	    
-	}
 	
 	@RequestMapping(value = "/events", method = RequestMethod.GET)
 	public ResponseEntity<List<Event>> getEvents(@RequestParam String userId) {
 		logger.info("getEvents: "+userId);
-		List<Event> events = service.getEventByPreference("hangout");
+		List<Event> events = service.getEventByInitiatingUser(userId);
 		logger.info("getEvents: "+events);
 		
 		return new ResponseEntity<List<Event>>(events, HttpStatus.OK);
 	    
 	}
 
+	@RequestMapping(value = "/matchingEvents", method = RequestMethod.GET)
+	public ResponseEntity<List<Event>> getMatchingEvents(@RequestParam String userId) {
+		logger.info("getEvents: "+userId);
+		
+		List<Event> events = new ArrayList<>();
+		for (Preference preference: service.getPreferenceById(userId)){
+			events.addAll(service.getEventByPreference(preference.getType()));
+		}
+
+		logger.info("getEvents: "+events);
+		
+		return new ResponseEntity<List<Event>>(events, HttpStatus.OK);
+	    
+	}
 }

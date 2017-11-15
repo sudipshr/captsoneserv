@@ -29,6 +29,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import me.localeconnect.model.Event;
+import me.localeconnect.model.Preference;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = LocaleConnectConfiguration.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -129,6 +130,36 @@ public class UserServiceControllerTest {
 	public void testEventsNew() {
 		
 		ResponseEntity<Event[]> responseEntity = this.testRestTemplate.getForEntity("http://localhost:" + this.port + "/eventserv/events?userId=test", Event[].class);
+		Event[] objects = responseEntity.getBody();
+
+        Arrays.asList(objects);
+	}
+	
+	@Test
+	public void testCreatePreference() {
+		
+		Preference event = new Preference();
+		
+		event.setType("dating");
+		event.setUserId("AA1510705578056");
+		
+		HttpEntity<Preference> request = new HttpEntity<>(event);
+		
+		ResponseEntity<Preference> entity = this.testRestTemplate.exchange(
+				"http://localhost:" + this.port + "/userserv/createPreference", 
+				HttpMethod.POST,
+				request, Preference.class
+				 );
+
+		then(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
+		
+		
+	}
+	
+	@Test
+	public void testMatchingEvents() {
+		
+		ResponseEntity<Event[]> responseEntity = this.testRestTemplate.getForEntity("http://localhost:" + this.port + "/eventserv/matchingEvents?userId=AA1510705578056", Event[].class);
 		Event[] objects = responseEntity.getBody();
 
         Arrays.asList(objects);

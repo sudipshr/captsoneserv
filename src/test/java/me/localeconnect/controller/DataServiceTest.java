@@ -3,6 +3,7 @@ package me.localeconnect.controller;
 import static org.junit.Assert.fail;
 
 import java.util.Date;
+import java.util.List;
 
 import org.junit.After;
 import org.junit.AfterClass;
@@ -11,6 +12,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import me.localeconnect.model.Event;
+import me.localeconnect.model.Preference;
 import me.localeconnect.model.User;
 
 public class DataServiceTest {
@@ -154,6 +156,44 @@ public class DataServiceTest {
 			service.save(event);
 			i++;
 			if (i>20) break;
+		}
+		
+		System.out.println("IDDDDD: "+id);
+		
+		List<Event> events = service.getEventByPreference("hangout");
+		System.out.println(events);
+		
+		
+		
+		
+		
+	}
+	
+	@Test
+	public void testPreferenceSave(){
+		
+		Preference event = new Preference();
+		
+		event.setType("dating hangout");
+		event.setUserId("AA"+System.currentTimeMillis());
+		
+		
+		service.save(event);
+		
+		String id = event.getId();
+		
+		System.out.println("IDDDDD: "+id);
+		
+
+		
+		int i = 0;
+		while (true){
+			event.setId(null);
+			event.setType("dating hangout");
+			event.setUserId("AA"+System.currentTimeMillis());
+			service.save(event);
+			i++;
+			if (i>3) break;
 		}
 		
 		System.out.println("IDDDDD: "+id);

@@ -1,11 +1,12 @@
 package me.localeconnect.controller;
 
 import java.util.Date;
+import java.util.List;
 
-import org.apache.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -14,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import me.localeconnect.model.Event;
+import me.localeconnect.model.Preference;
 import me.localeconnect.model.User;
 
 @Controller
@@ -23,7 +26,7 @@ public class UserServiceController {
 	private static final Logger logger = LoggerFactory.getLogger(UserServiceController.class);
 	
 	@Autowired
-	DataService userService;
+	DataService service;
 	
 	@RequestMapping(method = RequestMethod.POST, path = "/register")
 	public @ResponseBody User registerBackup(@RequestBody User user) {
@@ -31,10 +34,10 @@ public class UserServiceController {
 		logger.info(user.toString());
 		user.setJoinDate(new Date());
 		
-		User dbUser = userService.getUserByUserName(user.getUserName(), null);
+		User dbUser = service.getUserByUserName(user.getUserName(), null);
 		
 		if (dbUser == null)
-			userService.save(user);
+			service.save(user);
 		
 		logger.info(user.toString());
 
@@ -52,7 +55,7 @@ public class UserServiceController {
 			
 			String password = user.getPassword()+"";
 			
-			user = userService.getUserByUserName(user.getUserName(), null);
+			user = service.getUserByUserName(user.getUserName(), null);
 			
 			if (user != null && password.equals(user.getPassword())){
 				
@@ -81,10 +84,10 @@ public class UserServiceController {
 		user.setPassword(password);
 		user.setJoinDate(new Date());
 		
-		User dbUser = userService.getUserByUserName(userName, null);
+		User dbUser = service.getUserByUserName(userName, null);
 		
 		if (dbUser == null)
-			userService.save(user);
+			service.save(user);
 
 		return user;
 	}
@@ -97,7 +100,7 @@ public class UserServiceController {
 
 		try {
 
-			user = userService.getUserByUserName(userName, password);
+			user = service.getUserByUserName(userName, password);
 			
 			if (user != null && password.equals(user.getPassword())){
 				
@@ -113,6 +116,33 @@ public class UserServiceController {
 		}
 		
 		return new ResponseEntity<>(null, org.springframework.http.HttpStatus.UNAUTHORIZED);
+	}
+	
+	
+	@RequestMapping(value = "/createPreference", method = RequestMethod.POST)
+	public ResponseEntity<Preference> createPreference(@RequestBody Preference preference) {
+		
+		logger.info(preference.toString());
+		
+		service.save(preference);
+		logger.info(preference.toString());
+		return new ResponseEntity<Preference>(preference, HttpStatus.OK);
+	    
+	}
+	
+	/**
+	 * Return List of preferences for a given user
+	 * @param userId
+	 * @return
+	 */
+	@RequestMapping(value = "/getPreferences", method = RequestMethod.GET)
+	public ResponseEntity<List<Preference>> getPreferences(@RequestParam String userId) {
+		logger.info("getPreferences: "+userId);
+		List<Preference> preferences = service.getPreferenceById(userId);
+		logger.info("getPreferences: "+preferences);
+		
+		return new ResponseEntity<List<Preference>>(preferences, HttpStatus.OK);
+	    
 	}
 
 
