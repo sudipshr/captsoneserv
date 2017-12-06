@@ -130,6 +130,17 @@ public class UserServiceController {
 	    
 	}
 	
+	@RequestMapping(value = "/deletePreference", method = RequestMethod.DELETE)
+	public ResponseEntity<String> deletePreference(@RequestBody Preference preference) {
+		
+		logger.info(preference.toString());
+		
+		service.delete(preference);
+		logger.info("deleted preference");
+		return new ResponseEntity<String>("Deleted", HttpStatus.OK);
+	    
+	}
+	
 	/**
 	 * Return List of preferences for a given user
 	 * @param userId
