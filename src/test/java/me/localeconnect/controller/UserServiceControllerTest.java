@@ -154,6 +154,13 @@ public class UserServiceControllerTest {
 		then(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		
 		
+        request = new HttpEntity<Preference>(entity.getBody());
+        ResponseEntity<Preference> responseEntity = this.testRestTemplate.exchange("http://localhost:" + this.port + "/userserv/deletePreference",
+                HttpMethod.DELETE,
+                request, Preference.class);
+        Preference objects = responseEntity.getBody();
+		
+		
 	}
 	
 	@Test
